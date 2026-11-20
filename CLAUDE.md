@@ -20,9 +20,9 @@ There is no code yet. The repository has only `spec.md`, which is the source of 
 ## Architecture constraints (from spec.md)
 
 - **Storage**: one `localStorage` key (e.g. `meeting-room-board:v1`) holding a JSON array of bookings. No backend, no sync.
-- **Booking shape**: `{ id, roomId, date: "YYYY-MM-DD", startHour: 8–17, endHour: 9–18, title }`. Whole hours only, `endHour > startHour`, `title` required.
+- **Booking shape**: `{ id, roomId, date: "YYYY-MM-DD", startHour: 8–18, endHour: 9–19, title }`. Whole hours only, `endHour > startHour`, `title` required.
 - **Rooms**: exactly 3, hardcoded (會議室 A/B/C); no room-management UI.
-- **View**: single-day timeline — 3 room columns × 10 hourly rows (08:00–18:00), with previous/today/next and a date picker. Multi-hour bookings span contiguous cells.
+- **View**: single-day timeline — 3 room columns × 11 hourly rows (08:00–19:00), with previous/today/next and a date picker. Multi-hour bookings span contiguous cells.
 - **Conflict rule**: overlap within the same room and date is rejected on both create and edit; an edit must exclude the booking itself from the check. Different rooms may share a time slot.
 - **No delete**: by explicit user decision, bookings can only be edited, never deleted. Do not add a delete control.
 - Dates and times use the browser's local time zone.
