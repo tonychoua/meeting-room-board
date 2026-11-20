@@ -251,7 +251,7 @@
       var o = list[i];
       if (o.id === b.id) continue; // 修改時不與自己比對
       if (o.roomId === b.roomId && o.date === b.date &&
-          o.startHour < b.endHour && b.startHour < o.endHour) {
+          b.startHour < o.endHour && o.startHour < b.endHour) {
         var room = ROOMS.filter(function (r) { return r.id === o.roomId; })[0];
         return room.name + ' 在 ' + hourText(o.startHour) + '–' + hourText(o.endHour) +
                ' 已有「' + o.title + '」，請改選其他時段。';
