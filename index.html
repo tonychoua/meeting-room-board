@@ -183,6 +183,7 @@
   </form>
 </dialog>
 
+<script src="app.js"></script>
 <script>
 (function () {
   'use strict';
@@ -247,15 +248,11 @@
     if (!(b.startHour >= START_HOUR && b.endHour <= END_HOUR && b.startHour < b.endHour)) {
       return '結束時間必須晚於開始時間，且在 08:00 至 19:00 之間。';
     }
-    for (var i = 0; i < list.length; i++) {
-      var o = list[i];
-      if (o.id === b.id) continue; // 修改時不與自己比對
-      if (o.roomId === b.roomId && o.date === b.date &&
-          b.startHour < o.endHour && o.startHour < b.endHour) {
-        var room = ROOMS.filter(function (r) { return r.id === o.roomId; })[0];
-        return room.name + ' 在 ' + hourText(o.startHour) + '–' + hourText(o.endHour) +
-               ' 已有「' + o.title + '」，請改選其他時段。';
-      }
+    var o = findConflict(b, list); // 定義於 app.js
+    if (o) {
+      var room = ROOMS.filter(function (r) { return r.id === o.roomId; })[0];
+      return room.name + ' 在 ' + hourText(o.startHour) + '–' + hourText(o.endHour) +
+             ' 已有「' + o.title + '」，請改選其他時段。';
     }
     return null;
   }

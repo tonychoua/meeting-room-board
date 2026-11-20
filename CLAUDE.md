@@ -8,7 +8,7 @@ There is no code yet. The repository has only `spec.md`, which is the source of 
 
 ## 開發規範（必須遵守）
 
-- 本專案為單一 HTML 檔案，檔名固定為 `index.html`（HTML、CSS、JS 全部寫在檔內）。禁止拆分成多個檔案，禁止引入外部框架或函式庫（包含 CDN）。
+- 本專案為 `index.html` + `app.js` + `test.html` 三個檔案（衝突判斷函式放在 `app.js`，以一般 script 載入，不用 ES module）。禁止再拆分其他檔案，禁止引入外部框架或函式庫（包含 CDN）。
 - 所有介面文字與程式註解使用繁體中文。
 - 每次修改後，用一句話說明改了什麼。
 

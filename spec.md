@@ -34,7 +34,7 @@
 - 預約人、備註、參加人數等其他欄位
 
 ## 5. 技術限制
-- 只交付一個 `index.html` 檔（HTML、CSS、JS 都寫在同一個檔案裡），直接雙擊就能用瀏覽器開啟
+- 只交付 `index.html` + `app.js` + `test.html` 三個檔案，禁止再拆分其他檔案、禁止外部框架或函式庫（包含 CDN）；`app.js` 以一般 script 載入（非 ES module），直接雙擊 `index.html` 就能用瀏覽器開啟
 - 不使用建置工具，也不依賴後端
 - 資料存在 `localStorage`，只存在單一 key 中（例如 `meeting-room-board:v1`），格式為 JSON 陣列
 - 支援最新版 Chrome 和 Edge
