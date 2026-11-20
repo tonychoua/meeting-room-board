@@ -60,11 +60,11 @@
   .board-wrap { overflow-x: auto; }
   .board {
     display: grid;
-    grid-template-columns: 56px repeat(3, minmax(88px, 1fr));
+    grid-template-columns: 56px repeat(3, minmax(120px, 1fr));
     grid-template-rows: 48px repeat(11, var(--row-h));
     background: var(--surface);
     border: 1px solid var(--line);
-    min-width: 380px;
+    min-width: 416px;
   }
   .room-head {
     display: flex; align-items: center; padding: 0 12px;
@@ -86,6 +86,19 @@
     font-size: 0.875rem; text-align: left; padding: 6px 10px;
   }
   .cell:hover, .cell:focus-visible { background: #e1e8ec; color: var(--muted); }
+
+  /* 預約外框：左側為預約內容，右側（後方）為取消按鈕 */
+  .booking-wrap { display: flex; margin: 2px; min-width: 0; }
+  .booking-wrap .booking { margin: 0; flex: 1; min-width: 0; border-radius: 4px 0 0 4px; }
+  .booking-wrap[data-room="A"] .cancel-btn { background: var(--room-A); }
+  .booking-wrap[data-room="B"] .cancel-btn { background: var(--room-B); }
+  .booking-wrap[data-room="C"] .cancel-btn { background: var(--room-C); }
+  .cancel-btn {
+    border: 0; border-left: 1px solid rgba(255, 255, 255, 0.5); border-radius: 0 4px 4px 0;
+    padding: 0 8px; color: #fff; cursor: pointer; font-size: 0.875rem; font-weight: 700;
+  }
+  .cancel-btn:hover { background: var(--danger) !important; }
+  .cancel-btn:focus-visible { outline-color: #fff; outline-offset: -4px; }
 
   .booking {
     margin: 2px; padding: 8px 10px; border: 0; border-radius: 4px; cursor: pointer;
@@ -314,8 +327,27 @@
       blk.appendChild(el('span', 'r', hourText(b.startHour) + '–' + hourText(b.endHour)));
       blk.setAttribute('aria-label', '修改預約：' + b.title);
       blk.addEventListener('click', function () { openDialog(b); });
-      board.appendChild(place(blk, ci + 2, b.startHour - START_HOUR + 2, b.endHour - b.startHour));
+      var cancel = el('button', 'cancel-btn', '取消');
+      cancel.type = 'button';
+      cancel.setAttribute('aria-label', '取消預約：' + b.title);
+      cancel.addEventListener('click', function () { cancelBooking(b); });
+      var wrap = el('div', 'booking-wrap');
+      wrap.dataset.room = b.roomId;
+      wrap.appendChild(blk);
+      wrap.appendChild(cancel);
+      board.appendChild(place(wrap, ci + 2, b.startHour - START_HOUR + 2, b.endHour - b.startHour));
     });
+  }
+
+  // ===== 取消預約：確認後才刪除，並同步 localStorage =====
+  function cancelBooking(b) {
+    var room = ROOMS.filter(function (r) { return r.id === b.roomId; })[0];
+    var msg = '確定要取消「' + b.title + '」嗎？\n' + room.name + '　' + b.date + '　' +
+              hourText(b.startHour) + '–' + hourText(b.endHour) + '\n取消後無法復原。';
+    if (!window.confirm(msg)) return;
+    bookings = bookings.filter(function (o) { return o.id !== b.id; });
+    saveBookings(bookings);
+    render();
   }
 
   // ===== 對話框 =====

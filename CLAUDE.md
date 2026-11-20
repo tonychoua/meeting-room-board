@@ -15,7 +15,7 @@ There is no code yet. The repository has only `spec.md`, which is the source of 
 ## Build / run / test
 
 - No build step, package manager, test framework, or backend. Open `index.html` by double-clicking it in Chrome or Edge.
-- Verification is manual against the 10 acceptance criteria in `spec.md` §6.
+- Verification is manual against the 11 acceptance criteria in `spec.md` §6.
 
 ## Architecture constraints (from spec.md)
 
@@ -24,5 +24,5 @@ There is no code yet. The repository has only `spec.md`, which is the source of 
 - **Rooms**: exactly 3, hardcoded (會議室 A/B/C); no room-management UI.
 - **View**: single-day timeline — 3 room columns × 11 hourly rows (08:00–19:00), with previous/today/next and a date picker. Multi-hour bookings span contiguous cells.
 - **Conflict rule**: overlap within the same room and date is rejected on both create and edit; an edit must exclude the booking itself from the check. Different rooms may share a time slot.
-- **No delete**: by explicit user decision, bookings can only be edited, never deleted. Do not add a delete control.
+- **Cancel (F7)**: the user later reversed the earlier "no delete" decision. Each booking has a 「取消」 button that asks `confirm()` before removing it and syncing localStorage. Do not touch the create/edit flow or conflict check when changing it.
 - Dates and times use the browser's local time zone.
