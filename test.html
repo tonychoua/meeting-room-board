@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>衝突檢查測試</title>
+<style>
+  body { font-family: "Microsoft JhengHei", sans-serif; max-width: 760px; margin: 24px auto; padding: 0 16px; }
+  #summary { padding: 12px 16px; border-radius: 6px; font-size: 1.2em; font-weight: bold; margin-bottom: 16px; }
+  #summary.pass { background: #e6f7e9; color: #1a7f37; }
+  #summary.fail { background: #fdeaea; color: #c62828; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  th { background: #f3f3f3; }
+  tr.fail td { background: #fff5f5; }
+</style>
+</head>
+<body>
+<h1>findConflict 衝突檢查測試</h1>
+<div id="summary">執行中…</div>
+<table>
+  <thead><tr><th>測試名稱</th><th>預期值</th><th>實際值</th><th>結果</th></tr></thead>
+  <tbody id="results"></tbody>
+</table>
+
+<script src="app.js"></script>
+<script>
+  // 既有預約：會議室 A，2025-01-01，10–12 點
+  var 既有 = [{ id: 'x1', roomId: 'A', date: '2025-01-01', startHour: 10, endHour: 12, title: '既有' }];
+
+  // 建立一筆新預約（預設 A 室、同日）
+  function 新預約(roomId, start, end) {
+    return { id: 'new', roomId: roomId, date: '2025-01-01', startHour: start, endHour: end, title: '測試' };
+  }
+
+  // 每筆測試：名稱、新預約、預期是否衝突
+  var 測試 = [
+    { 名稱: '一般：完全相同時段（10–12 vs 10–12）', b: 新預約('A', 10, 12), 預期: true },
+    { 名稱: '一般：完全錯開（14–16 vs 10–12）',     b: 新預約('A', 14, 16), 預期: false },
+    { 名稱: '邊界：前段重疊（9–11 vs 10–12）',       b: 新預約('A', 9, 11),  預期: true },
+    { 名稱: '邊界：後段重疊（11–13 vs 10–12）',      b: 新預約('A', 11, 13), 預期: true },
+    { 名稱: '邊界：新預約完全包含既有（9–13 vs 10–12）', b: 新預約('A', 9, 13), 預期: true },
+    { 名稱: '邊界：新預約被既有完全包含（10–11 vs 10–12）', b: 新預約('A', 10, 11), 預期: true },
+    { 名稱: '邊界：緊鄰在後（12–14 vs 10–12）應允許', b: 新預約('A', 12, 14), 預期: false },
+    { 名稱: '邊界：緊鄰在前（8–10 vs 10–12）應允許',  b: 新預約('A', 8, 10),  預期: false },
+    { 名稱: '邊界：不同會議室同時段（B 室 10–12）應允許', b: 新預約('B', 10, 12), 預期: false }
+  ];
+
+  var 通過 = 0;
+  var tbody = document.getElementById('results');
+
+  測試.forEach(function (t) {
+    var 實際;
+    try {
+      實際 = findConflict(t.b, 既有) !== null;
+    } catch (e) {
+      實際 = '例外：' + e.message;
+    }
+    var ok = (實際 === t.預期);
+    if (ok) 通過++;
+
+    var tr = document.createElement('tr');
+    if (!ok) tr.className = 'fail';
+    [t.名稱, 顯示(t.預期), 顯示(實際), ok ? '✅' : '❌'].forEach(function (text) {
+      var td = document.createElement('td');
+      td.textContent = text;
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  // 把布林值轉成易讀文字
+  function 顯示(v) {
+    if (v === true) return '有衝突（true）';
+    if (v === false) return '無衝突（false）';
+    return String(v);
+  }
+
+  var summary = document.getElementById('summary');
+  summary.textContent = '通過 ' + 通過 + ' 項／共 ' + 測試.length + ' 項';
+  summary.className = (通過 === 測試.length) ? 'pass' : 'fail';
+</script>
+</body>
+</html>
